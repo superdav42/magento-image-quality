@@ -1,17 +1,17 @@
 {
     "name": "devstone/module-imagequality",
-    "description": "N/A",
+    "description": "Add Improved image quality controls to magento 2",
     "type": "magento2-module",
     "version": "1.0.0",
     "license": [
-        "proprietary"
+        "GPL-3.0"
     ],
     "require": {
         "magento/module-catalog": ">=100.0.0",
         "magento/framework": ">=100.0.0"
     },
     "autoload": {
-        "files": [ 
+        "files": [
             "registration.php"
         ],
         "psr-4": {
