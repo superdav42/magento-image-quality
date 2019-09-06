@@ -12,6 +12,17 @@ Magento has made assumptions about how images should be processed and they do no
 for many users, such as hard coding JPEG image quality to 80. There are also several bugs in Magento core related to 
 image processing that this extension fixes. 
 
+Installation
+-------
+Use composer
+```
+composer require devstone/magento2-module-imagequality
+```
+or if your really want copy all files in this repository into:
+```
+app/code/DevStone/ImageQuality
+```
+
 Features
 ------
 * Add config options for setting JPEG quality for all product image sizes
