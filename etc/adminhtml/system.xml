@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="devstone" translate="label" sortOrder="152">
+            <label>DevStone Extensions</label>
+        </tab>
+        <section id="design" translate="label" sortOrder="90" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Image Quality</label>
+            <tab>devstone</tab>
+            <resource>DevStone_ImageQuality::config</resource>
+            <group id="image" translate="label" sortOrder="10" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Image Settings</label>
+                <field id="image_quality" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Base Image Quality</label>
+                    <comment>
+                        <![CDATA[
+                        <p id="jpeg_quality_comment">
+                        JPEG Compression Quality to use for large image previews.
+                        A higher number produces better quality images but larger file sizes.
+                        The optimum quality setting depends on the content of the images.
+                        </p>
+                        <p>
+                        <strong>92</strong> is the highest recommended setting as higher values will not be noticeably different but will create a drastic increase in file size.
+                        </p>
+                        <p>
+                        <strong>85</strong> generally produces good file sizes with almost no loss in quality.
+                        </p>
+                        <p>
+                        <strong>75</strong> is the lowest recommended setting and will likely produce noticeable differences from the original.
+                        </p>
+                        <p>
+                        Must be a number between 1-100.
+                        </p>
+                        ]]>
+                    </comment>
+                </field>
+                <field id="small_image_quality" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Small Image Quality</label>
+                    <comment>
+                        <![CDATA[
+                        JPEG Compression Quality to use for images shown in product lists. <br />
+                        See <a href="#jpeg_quality_comment">comment</a> above.
+                        ]]>
+                    </comment>
+                </field>
+                <field id="thumbnail_quality" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Thumnail Image Quality</label>
+                    <comment>
+                        <![CDATA[
+                        JPEG Compression Quality to use for product image thumbnails in the gallery and other pages.<br />
+                        See <a href="#jpeg_quality_comment">comment</a> above.
+                        ]]>
+                    </comment>
+                </field>
+                <field id="swatch_image_quality" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1" >
+                    <label>Swatch Image Quality</label>
+                    <comment>
+                        <![CDATA[
+                        JPEG Compression Quality to use for product swatches. <br />
+                        See <a href="#jpeg_quality_comment">comment</a> above.
+                        ]]>
+                    </comment>
+                </field>
+                <field id="swatch_thumb_quality" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1" >
+                    <label>Swatch Thumb Quality</label>
+                    <comment>
+                        <![CDATA[
+                        JPEG Compression Quality to use for product swatch thumbnails. <br />
+                        See <a href="#jpeg_quality_comment">comment</a> above.
+                        ]]>
+                    </comment>
+                </field>
+                <field id="custom_quality" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Custom Image Type Quality</label>
+                    <comment>
+                        <![CDATA[
+                        Sets the JPEG Compression Quality to use for any special image types defined by a theme.<br />
+                        See <a href="#jpeg_quality_comment">comment</a> above.
+                        ]]>
+                    </comment>
+                </field>
+                <field id="keep_frame" translate="label"  type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Keep Frame</label>
+                    <comment>
+                        <![CDATA[
+                        Keep Frame creates white borders or frame around the resized image when the aspect ratio does not match the requested size. <br />
+                        'No' is recommended and almost all themes are designed to properly position images without a frame.
+                        ]]>
+                    </comment>
+                    <options>
+                        <option label="Use Theme's config">theme</option>
+                        <option label="Yes">1</option>
+                        <option label="No">0</option>
+                    </options>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

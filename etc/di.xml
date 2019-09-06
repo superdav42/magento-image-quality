@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Catalog\Helper\Image" type="DevStone\ImageQuality\Helper\Image" />
+    <preference for="Magento\Framework\Image\Adapter\ImageMagick" type="DevStone\ImageQuality\Image\Adapter\ImageMagick" />
+    <preference for="Magento\Framework\Image\Adapter\Gd2" type="DevStone\ImageQuality\Image\Adapter\Gd2" />
+    
+    <!--We modify the schema locator to use our view.xsd to add support for quality tag in themes' view.xml-->
+    <type name="Magento\Framework\Config\SchemaLocator" >
+        <arguments>
+            <argument name="realPath" xsi:type="string">urn:magento:module:DevStone_ImageQuality:etc/view.xsd</argument>
+        </arguments>
+    </type>
+</config>

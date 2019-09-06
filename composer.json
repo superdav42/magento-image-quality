@@ -1,0 +1,21 @@
+{
+    "name": "devstone/module-imagequality",
+    "description": "N/A",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "proprietary"
+    ],
+    "require": {
+        "magento/module-catalog": ">=100.0.0",
+        "magento/framework": ">=100.0.0"
+    },
+    "autoload": {
+        "files": [ 
+            "registration.php"
+        ],
+        "psr-4": {
+            "DevStone\\ImageQuality\\": ""
+        }
+    }
+}

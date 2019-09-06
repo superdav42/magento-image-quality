@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+  <default>
+    <design>
+      <image>
+        <image_quality>85</image_quality>
+        <small_image_quality>80</small_image_quality>
+        <thumbnail_quality>80</thumbnail_quality>
+        <swatch_image_quality>85</swatch_image_quality>
+        <swatch_thumb_quality>80</swatch_thumb_quality>
+        <custom_quality>85</custom_quality>
+        <keep_frame>theme</keep_frame>
+      </image>
+    </design>
+    <dev>
+        <image>
+            <default_adapter>GD2</default_adapter>
+            <adapters>
+                <GD2>
+                    <title>PHP GD2</title>
+                    <class>Magento\Framework\Image\Adapter\Gd2</class>
+                </GD2>
+                <IMAGEMAGICK>
+                    <title>ImageMagick</title>
+                    <class>Magento\Framework\Image\Adapter\ImageMagick</class>
+                </IMAGEMAGICK>
+                <GRAPHICSMAGICK>
+                    <title>GraphicsMagick</title>
+                    <class>DevStone\ImageQuality\Image\Adapter\GraphicsMagick</class>
+                </GRAPHICSMAGICK>
+            </adapters>
+        </image>
+    </dev>
+  </default>
+</config>

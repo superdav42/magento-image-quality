@@ -1,0 +1,23 @@
+DevStone Commercial Software License v1.0.0
+
+This license is a legal agreement between you (hereinafter Licensee) and David Stone (hereinafter the Licensor) for Magento extensions (hereinafter Software) downloading or using. Licensor reserve the right to change or modify the current document with no prior notice.
+
+1. Permitted Use. Licensor grants Licensee a non-exclusive and non-transferable right to use the Software. One license corresponds to the single Software installation only. Up to 3 additional test installations are permitted per license. Each additional installation requires additional license to be purchased. Licensee entitled customize and overwrite Software depending on needs.
+
+2. Restrictions. Licensee may not redistribute, sell, rent, lease, sub-license, or otherwise transfer rights to any third party. Other person rights granting is prohibited. Licensee must not remove copyright or other proprietary notices in Software.
+
+3. Termination. Without prejudice to any other rights, Licensor / Licensee may terminate this agreement if Licensee / Licensor breaches any of its terms and conditions. Upon termination, Licensee must destroy all copies of the Licensed Software held or controlled by Licensee.
+
+4. Indemnity. Licensee agree to indemnify and hold harmless Licensor for any third-party claims, actions, or any related expenses, damages arising out of Software use or agreement terms violation by Licensee side.
+
+5. Ownership. Software is a property of Licensor. Licensee may not claim intellectual or exclusive ownership rights to Software.
+
+6. Support. Technical support is available according to support services purchased along with Software.
+
+7. Updates. Licensee receives free Software updates for 6 months from date of purchase.
+
+8. Refund. Licensor offers refund on Software within 30 days of purchase.
+
+9. Disclaimer Of Warranty And Limitations Of Liability. The Software is provided as is, without warranty of any kind, either expressed or implied. Licensor does not warrant that the Software or any related service will always be available. Licensee assumes all risk associated with the installation and use of the software. In no event shall the Licensor be liable for claims, damages or other liability arising from, out of, or in connection with Software.
+
+
