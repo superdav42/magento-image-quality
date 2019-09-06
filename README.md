@@ -12,6 +12,8 @@ Magento has made assumptions about how images should be processed and they do no
 for many users, such as hard coding JPEG image quality to 80. There are also several bugs in Magento core related to 
 image processing that this extension fixes. 
 
+It was originally created for use with [Image Product Type](https://github.com/superdav42/magento-image-products) which turns Magento into a stock image store but it has been seperated so it can be used by any site that wants high quality product images.
+
 Installation
 -------
 Use composer
