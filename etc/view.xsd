@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="view">
@@ -50,7 +47,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="quality" type="xs:positiveInteger" minOccurs="0"/>
-                        
+
                         <xs:element name="width" type="xs:positiveInteger" minOccurs="0"/>
                         <xs:element name="height" type="xs:positiveInteger" minOccurs="0"/>
                         <xs:element name="constrain" type="xs:boolean" minOccurs="0"/>
