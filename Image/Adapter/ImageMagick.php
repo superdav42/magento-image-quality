@@ -18,19 +18,19 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
      * The blur factor where > 1 is blurry, < 1 is sharp
      */
     const BLUR_FACTOR = 1;
-    
+
     /**
      *
      * @var string cache for sRGB color profile
      */
     private static $profileData;
-    
+
     /**
      *
      * @var array cache for watermark resources
      */
     private static $watermarks = [];
-    
+
     private function getSRGBProfileData()
     {
         if (empty(self::$profileData)) {
@@ -42,10 +42,10 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
     public function open($filename)
     {
         parent::open($filename);
-        
+
         $this->_imageHandler->profileImage('icc', $this->getSRGBProfileData());
     }
-    
+
     /**
      * Change the image size
      *
@@ -64,7 +64,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             \Imagick::FILTER_LANCZOS,
             static::BLUR_FACTOR
         );
-        
+
         if ($dims['dst']['width'] !== $dims['frame']['width'] ||
             $dims['dst']['height'] !== $dims['frame']['height']
         ) {
@@ -78,11 +78,11 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
 
         $this->refreshImageDimensions();
     }
-    
+
     protected function _applyOptions()
     {
         parent::_applyOptions();
-        
+
         $this->_imageHandler->setInterlaceScheme(\Imagick::INTERLACE_LINE);
     }
 
@@ -90,7 +90,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
     {
         $pathinfo = pathinfo($imagePath);
         $suffix = '-tmp';
-        
+
         if ($this->getWatermarkPosition() === self::POSITION_STRETCH) {
             $watermarkWidth = $this->_imageSrcWidth;
             $watermarkHeight = $this->_imageSrcHeight;
@@ -98,21 +98,21 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             $watermarkWidth = $this->getWatermarkWidth();
             $watermarkHeight = $this->getWatermarkHeight();
         }
-        
+
         if ($watermarkWidth && $watermarkHeight) {
             $suffix .= '-'.$watermarkWidth.'x'.$watermarkHeight;
         }
-        
+
         if ($opacity < 100) {
             $suffix .= '-O'.$opacity;
         }
-        
+
         $cachedFilename = $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
-        
+
         if (isset(self::$watermarks[$cachedFilename])) {
             return self::$watermarks[$cachedFilename];
         }
-        
+
         try {
             return self::$watermarks[$cachedFilename] = $this->_getImagickObject($cachedFilename);
         } catch (\ImagickException $e) {
@@ -122,11 +122,11 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
         if (empty($imagePath) || !file_exists($imagePath)) {
             throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
         }
-        
+
         list($watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType) = $this->_getImageOptions($imagePath);
-        
+
         $watermark = $this->_getImagickObject($imagePath);
-        
+
         if ($watermarkWidth && $watermarkHeight &&
             ($watermarkWidth !== $watermarkSrcWidth ||
             $watermarkHeight !== $watermarkSrcHeight)
@@ -138,7 +138,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
                 static::BLUR_FACTOR
             );
         }
-        
+
         if ($opacity < 100) {
             if (method_exists($watermark, 'getImageAlphaChannel') && $watermark->getImageAlphaChannel() == 0) {
                 // available from imagick 6.4.0
@@ -146,13 +146,13 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             }
             $watermark->evaluateImage(\Imagick::EVALUATE_MULTIPLY, round($opacity / 100, 1), \Imagick::CHANNEL_OPACITY);
         }
-        
+
         $watermark->writeImage($cachedFilename);
-        
+
         self::$watermarks[$cachedFilename] = $watermark;
         return $watermark;
     }
-    
+
     /**
      * Add watermark to image
      *
@@ -176,10 +176,10 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
         $this->_checkCanProcess();
 
         $origOpacity = $this->getWatermarkImageOpacity() ? $this->getWatermarkImageOpacity() : $opacity;
-        
+
         $watermark = $this->getWatermarkResource($imagePath, $origOpacity);
 
-        $this->_imageHandler->setImageAlphaChannel(\Imagick::ALPHACHANNEL_FLATTEN);
+        $this->_imageHandler->setImageAlphaChannel( 11 /*\Imagick::ALPHACHANNEL_FLATTEN - a bug makes this undefined in some installations even though 11 works*/);
 
         $compositeChannels = \Imagick::CHANNEL_ALL;
         $compositeChannels &= ~(\Imagick::CHANNEL_OPACITY);
