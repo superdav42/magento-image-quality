@@ -269,7 +269,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
         $fileName = $this->_prepareDestination($destination, $newName);
 
         $this->_applyOptions();
-        if ( ! $this->_quality && $this->_quality < 90 ) {
+        if ( ! $this->_quality || $this->_quality < 95 ) {
             $this->_imageHandler->stripImage();
         }
         $this->_imageHandler->writeImage($fileName);
