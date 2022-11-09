@@ -26,6 +26,17 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
     private static $profileData;
 
     /**
+     * Options Container
+     *
+     * @var array
+     */
+    protected $_options = [
+        'resolution' => ['x' => 300, 'y' => 300],
+        'small_image' => ['width' => 300, 'height' => 300],
+        'sharpen' => ['radius' => 4, 'deviation' => 1],
+    ];
+
+    /**
      *
      * @var array cache for watermark resources
      */
@@ -240,5 +251,27 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
         } catch (\ImagickException $e) {
             throw new \Exception('Unable to create watermark.', $e->getCode(), $e);
         }
+    }
+
+
+    /**
+     * Save image to specific path.
+     *
+     * If some folders of path does not exist they will be created
+     *
+     * @param null|string $destination
+     * @param null|string $newName
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException If destination path is not writable
+     */
+    public function save($destination = null, $newName = null)
+    {
+        $fileName = $this->_prepareDestination($destination, $newName);
+
+        $this->_applyOptions();
+        if ( ! $this->_quality && $this->_quality < 90 ) {
+            $this->_imageHandler->stripImage();
+        }
+        $this->_imageHandler->writeImage($fileName);
     }
 }
