@@ -201,8 +201,8 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
                 $positionY = 0;
                 break;
             case self::POSITION_CENTER:
-                $positionX = ($this->_imageSrcWidth - $watermark->getImageWidth()) / 2;
-                $positionY = ($this->_imageSrcHeight - $watermark->getImageHeight()) / 2;
+                $positionX = floor(($this->_imageSrcWidth - $watermark->getImageWidth()) / 2);
+                $positionY = floor(($this->_imageSrcHeight - $watermark->getImageHeight()) / 2);
                 break;
             case self::POSITION_TOP_RIGHT:
                 $positionX = $this->_imageSrcWidth - $watermark->getImageWidth();
