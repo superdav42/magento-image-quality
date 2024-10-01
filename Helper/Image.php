@@ -19,11 +19,11 @@ class Image extends \Magento\Catalog\Helper\Image
      */
     public function init($product, $imageId, $attributes = [])
     {
-        
+
         $return = parent::init($product, $imageId, $attributes);
-        
+
         $model = $this->_getModel();
-        
+
         // Set 'keep frame' flag
         $frame = $this->getFrame();
         if (null !== $frame) {
@@ -47,13 +47,16 @@ class Image extends \Magento\Catalog\Helper\Image
         if (null !== $transparency) {
             $model->setKeepTransparency($transparency);
         }
-        
+
         // Set quality
         $quality = $this->getQuality();
         if (!empty($quality)) {
             $model->setQuality($quality);
         }
-        
+        if (false === $this->getAttribute('watermark')) {
+            $this->watermark('','','',0);
+        }
+
         return $return;
     }
 
@@ -65,7 +68,7 @@ class Image extends \Magento\Catalog\Helper\Image
     public function getFrame()
     {
         $frame = $this->getAttribute('frame');
-        
+
         if (null === $frame) {
             $frame = $this->scopeConfig->getValue(
                 "design/image/keep_frame",
