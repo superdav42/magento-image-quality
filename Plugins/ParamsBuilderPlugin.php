@@ -12,13 +12,17 @@ class ParamsBuilderPlugin
         \Magento\Catalog\Model\Product\Image\ParamsBuilder $subject,
         array $result,
         array $imageArguments,
-        int $scopeId = null) {
-        if ( isset($imageArguments['watermark']) && 'false' === $imageArguments['watermark'] ) {
+        int $scopeId = null
+    ) {
+        if (isset($imageArguments['watermark']) && 'false' === $imageArguments['watermark']) {
             unset($result['watermark_file']);
             unset($result['watermark_image_opacity']);
             unset($result['watermark_position']);
             unset($result['watermark_width']);
             unset($result['watermark_height']);
+        }
+        if (isset($imageArguments['quality']) && $result['quality'] != $imageArguments['quality']) {
+            $result['quality'] = $imageArguments['quality'];
         }
         return $result;
     }

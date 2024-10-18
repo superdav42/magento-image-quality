@@ -53,8 +53,8 @@ class Image extends \Magento\Catalog\Helper\Image
         if (!empty($quality)) {
             $model->setQuality($quality);
         }
-        if (false === $this->getAttribute('watermark')) {
-            $this->watermark('','','',0);
+        if ('false' === $this->getAttribute('watermark')) {
+            $this->watermark('', '', '', 0);
         }
 
         return $return;

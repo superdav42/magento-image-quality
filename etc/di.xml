@@ -10,6 +10,7 @@
             <argument name="realPath" xsi:type="string">urn:magento:module:DevStone_ImageQuality:etc/view.xsd</argument>
         </arguments>
     </type>
+    <preference for="Magento\Catalog\Model\Product\Image" type="DevStone\ImageQuality\Model\Product\Image" />
     <type name="Magento\Catalog\Model\Product\Image\ParamsBuilder">
         <plugin name="devstone_param_builder" type="DevStone\ImageQuality\Plugins\ParamsBuilderPlugin" />
     </type>
