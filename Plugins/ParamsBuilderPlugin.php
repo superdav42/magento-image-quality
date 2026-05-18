@@ -12,7 +12,7 @@ class ParamsBuilderPlugin
         \Magento\Catalog\Model\Product\Image\ParamsBuilder $subject,
         array $result,
         array $imageArguments,
-        int $scopeId = null
+        ?int $scopeId = null
     ) {
         if (isset($imageArguments['watermark']) && 'false' === $imageArguments['watermark']) {
             unset($result['watermark_file']);

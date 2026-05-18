@@ -74,6 +74,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      *
      * @return void
      */
+    #[\Override]
     protected function _reset()
     {
         $this->icc_chunks = 0;
@@ -89,6 +90,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      * @return void
      * @throws \OverflowException
      */
+    #[\Override]
     public function open($filename)
     {
         parent::open($filename);
@@ -105,6 +107,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      * @return void
      * @throws \Exception  If destination path is not writable
      */
+    #[\Override]
     public function save($destination = null, $newName = null)
     {
         $fileName = $this->_prepareDestination($destination, $newName);
@@ -131,18 +134,11 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
         imageinterlace($this->_imageHandler, true);
 
         // Set image quality value
-        switch ($this->_fileType) {
-            case IMAGETYPE_PNG:
-                $quality = 9;   // For PNG files compression level must be from 0 (no compression) to 9.
-                break;
-
-            case IMAGETYPE_JPEG:
-                $quality = $this->quality();
-                break;
-
-            default:
-                $quality = null;    // No compression.
-        }
+        $quality = match ($this->_fileType) {
+            IMAGETYPE_PNG => 9,
+            IMAGETYPE_JPEG => $this->quality(),
+            default => null,
+        };
 
         // Prepare callback method parameters
         $functionParameters = [$this->_imageHandler, $fileName];
@@ -156,7 +152,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
     
     private function getWatermarkResource($imagePath, $opacity)
     {
-        $pathinfo = pathinfo($imagePath);
+        $pathinfo = pathinfo((string) $imagePath);
         $suffix = '-tmp';
         
         $watermarkWidth = $this->getWatermarkWidth();
@@ -187,7 +183,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
             return $watermark;
         }
         
-        list($watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType) = $this->_getImageOptions($imagePath);
+        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($imagePath);
         
         $watermark = call_user_func(
             $this->getCallback('create', $watermarkFileType, 'Unsupported watermark image format.'),
@@ -253,9 +249,10 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\Override]
     public function watermark($imagePath, $positionX = 0, $positionY = 0, $opacity = 30, $tile = false)
     {
-        $origOpacity = $this->getWatermarkImageOpacity() ? $this->getWatermarkImageOpacity() : $opacity;
+        $origOpacity = $this->getWatermarkImageOpacity() ?: $opacity;
         
         $watermark = $this->getWatermarkResource($imagePath, $origOpacity);
 
@@ -434,7 +431,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
         $profile_chunks = [];
 
         while ($pos < $len && $counter < 1000) {
-            $pos = strpos($f, "\xff", $pos);
+            $pos = strpos((string) $f, "\xff", $pos);
             if ($pos === false) {
                 break; // dalsie 0xFF sa uz nenaslo - koniec vyhladavania
             }
@@ -445,7 +442,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
                     $size = $this->getJPEGSegmentSize($f, $pos);
                     
                     if ($this->getJPEGSegmentContainsICC($f, $pos, $size)) {
-                        list($chunk_no, $chunk_cnt) = $this->getJPEGSegmentICCChunkInfo($f, $pos);
+                        [$chunk_no, $chunk_cnt] = $this->getJPEGSegmentICCChunkInfo($f, $pos);
 
                         if ($chunk_no <= $chunk_cnt) {
                             $profile_chunks[$chunk_no] = $this->getJPEGSegmentICCChunk($f, $pos);
@@ -527,7 +524,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      */
     private function getJPEGSegmentSize(&$f, $pos)
     {
-        $arr = unpack('nint', substr($f, $pos + 2, 2)); // segment size has offset 2 and length 2B
+        $arr = unpack('nint', substr((string) $f, $pos + 2, 2)); // segment size has offset 2 and length 2B
         return $arr['int'];
     }
 
@@ -540,7 +537,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      */
     private function getJPEGSegmentType(&$f, $pos)
     {
-        $arr = unpack('Cchar', substr($f, $pos + 1, 1)); // segment type has offset 1 and length 1B
+        $arr = unpack('Cchar', substr((string) $f, $pos + 1, 1)); // segment type has offset 1 and length 1B
         return $arr['char'];
     }
 
@@ -559,7 +556,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
         }
         
         // 4B offset in segment data = 2B segment marker + 2B segment size data
-        return (bool) (substr($f, $pos + 4, self::ICC_HEADER_LEN - 2) == self::ICC_MARKER);
+        return (bool) (substr((string) $f, $pos + 4, self::ICC_HEADER_LEN - 2) == self::ICC_MARKER);
     }
 
     /**
@@ -573,7 +570,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
     {
         // 16B offset to data = 2B segment marker + 2B segment size + 'ICC_PROFILE' + 0x00,
         // 1. byte chunk number, 2. byte chunks count
-        $a = unpack('Cchunk_no/Cchunk_count', substr($f, $pos + 16, 2));
+        $a = unpack('Cchunk_no/Cchunk_count', substr((string) $f, $pos + 16, 2));
         return array_values($a);
     }
 
@@ -589,7 +586,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
         $data_offset = $pos + 4 + self::ICC_HEADER_LEN; // 4B JPEG APP offset + 14B ICC header offset
         $size = $this->getJPEGSegmentSize($f, $pos);
         $data_size = $size - self::ICC_HEADER_LEN - 2; // 14B ICC header - 2B of size data
-        return substr($f, $data_offset, $data_size);
+        return substr((string) $f, $data_offset, $data_size);
     }
 
     /**
@@ -602,12 +599,12 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
      */
     private function insertProfile(&$jpeg_data)
     {
-        $len = strlen($jpeg_data);
+        $len = strlen((string) $jpeg_data);
         $pos = 0;
         $counter = 0;
 
         while ($pos < $len && $counter < 100) {
-            $pos = strpos($jpeg_data, "\xff", $pos);
+            $pos = strpos((string) $jpeg_data, "\xff", $pos);
             if ($pos === false) {
                 break; // no more 0xFF - we can end up with search
             }
@@ -621,8 +618,8 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
                     
                     $p_data = $this->prepareJPEGProfileData();
                     if ($p_data != '') {
-                        $before = substr($jpeg_data, 0, $pos);
-                        $after = substr($jpeg_data, $pos);
+                        $before = substr((string) $jpeg_data, 0, $pos);
+                        $after = substr((string) $jpeg_data, $pos);
                         $jpeg_data = $before . $p_data . $after;
                         return true;
                     }
@@ -671,7 +668,7 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
     private function setProfile($data)
     {
         $this->icc_profile = $data;
-        $this->icc_size = strlen($data);
+        $this->icc_size = strlen((string) $data);
         $this->countChunks();
     }
     

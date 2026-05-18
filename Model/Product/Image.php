@@ -33,8 +33,8 @@ class Image extends ProductImage
         private readonly ParamsBuilder $paramsBuilder,
         private readonly SerializerInterface $serializer,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
     ) {
         parent::__construct(
@@ -58,6 +58,7 @@ class Image extends ProductImage
         );
     }
 
+    #[\Override]
     public function setBaseFile($file)
     {
         $this->_isBaseFilePlaceholder = false;
@@ -114,6 +115,7 @@ class Image extends ProductImage
      *
      * @return $this
      */
+    #[\Override]
     public function saveFile()
     {
         if ($this->_isBaseFilePlaceholder) {
@@ -130,6 +132,7 @@ class Image extends ProductImage
      *
      * @return string
      */
+    #[\Override]
     public function getUrl()
     {
         return $this->imageAsset->getUrl();
@@ -140,6 +143,7 @@ class Image extends ProductImage
      *
      * @return bool
      */
+    #[\Override]
     public function isCached()
     {
         $path = $this->imageAsset->getPath();
@@ -152,6 +156,7 @@ class Image extends ProductImage
      * @return array
      * @throws NotLoadInfoImageException
      */
+    #[\Override]
     public function getResizedImageInfo()
     {
         try {

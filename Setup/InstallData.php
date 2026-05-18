@@ -15,42 +15,20 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class InstallData implements InstallDataInterface
 {
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    private $config;
-    
-    /**
-     * @var \Magento\Framework\Image\AdapterFactory
-     */
-    private $adapterFactory;
-    
-    /**
-     *
-     * @var \Magento\Catalog\Model\Product\ImageFactory
-     */
-    private $imageFactory;
-
-	/**
 	 * 
 	 * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
 	 * @param \Magento\Framework\Image\AdapterFactory $adapterFactory
 	 * @param \Magento\Catalog\Model\Product\ImageFactory $imageFactory
 	 */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Framework\Image\AdapterFactory $adapterFactory,
-        \Magento\Catalog\Model\Product\ImageFactory $imageFactory
-    ) {
-        $this->config = $config;
-        $this->adapterFactory = $adapterFactory;
-        $this->imageFactory = $imageFactory;
-
+    public function __construct(private readonly \Magento\Framework\App\Config\ScopeConfigInterface $config, private readonly \Magento\Framework\Image\AdapterFactory $adapterFactory, private readonly \Magento\Catalog\Model\Product\ImageFactory $imageFactory)
+    {
     }
 
     /**
      * {@inheritdoc}
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
+    #[\Override]
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
         $currentAdapter = (string) $this->config->getValue(
@@ -85,7 +63,7 @@ class InstallData implements InstallDataInterface
                 }
                 break;
 				
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // not supported
 				continue;
             }

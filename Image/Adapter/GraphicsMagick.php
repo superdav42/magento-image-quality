@@ -58,6 +58,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @param int|string|array $color
      * @return int
      */
+    #[\Override]
     public function backgroundColor($color = null)
     {
         if ($color) {
@@ -90,6 +91,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @return void
      * @throws \Exception
      */
+    #[\Override]
     public function open($filename)
     {
         $this->_fileName = $filename;
@@ -133,6 +135,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @return void
      * @throws \Exception  If destination path is not writable
      */
+    #[\Override]
     public function save($destination = null, $newName = null)
     {
         $fileName = $this->_prepareDestination($destination, $newName);
@@ -166,6 +169,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @see \Magento\Framework\Image\Adapter\AbstractAdapter::getImage
      * @return string
      */
+    #[\Override]
     public function getImage()
     {
         $this->_applyOptions();
@@ -179,6 +183,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @param null|int $frameHeight
      * @return void
      */
+    #[\Override]
     public function resize($frameWidth = null, $frameHeight = null)
     {
         $this->_checkCanProcess();
@@ -220,6 +225,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @param int $angle
      * @return void
      */
+    #[\Override]
     public function rotate($angle)
     {
         $this->_checkCanProcess();
@@ -241,6 +247,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @param int $bottom
      * @return bool
      */
+    #[\Override]
     public function crop($top = 0, $left = 0, $right = 0, $bottom = 0)
     {
         if ($left == 0 && $top == 0 && $right == 0 && $bottom == 0 || !$this->_canProcess()) {
@@ -257,7 +264,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
 
     private function getWatermarkResource($imagePath, $opacity)
     {
-        $pathinfo = pathinfo($imagePath);
+        $pathinfo = pathinfo((string) $imagePath);
         $suffix = '-tmp';
         
         $watermarkWidth = $this->getWatermarkWidth();
@@ -286,7 +293,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
         
         try {
             return self::$watermarks[$cachedFilename] = new \Gmagick($cachedFilename);
-        } catch (\GmagickException $e) {
+        } catch (\GmagickException) {
             // continue
         }
 
@@ -294,7 +301,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
             throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
         }
         
-        list($watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType) = $this->_getImageOptions($imagePath);
+        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($imagePath);
         
         $watermark = new \Gmagick($imagePath);
         
@@ -349,11 +356,12 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
+    #[\Override]
     public function watermark($imagePath, $positionX = 0, $positionY = 0, $opacity = 30, $tile = false)
     {
         $this->_checkCanProcess();
         
-        $origOpacity = $this->getWatermarkImageOpacity() ? $this->getWatermarkImageOpacity() : $opacity;
+        $origOpacity = $this->getWatermarkImageOpacity() ?: $opacity;
         
         $watermark = $this->getWatermarkResource($imagePath, $origOpacity);
 
@@ -418,6 +426,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @return void
      * @throws \Exception If some of dependencies are missing
      */
+    #[\Override]
     public function checkDependencies()
     {
         if (!class_exists('\Gmagick', false)) {
@@ -430,6 +439,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      *
      * @return void
      */
+    #[\Override]
     public function refreshImageDimensions()
     {
         $this->_imageSrcWidth = $this->_imageHandler->getImageWidth();
@@ -465,6 +475,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @param int $y
      * @return array
      */
+    #[\Override]
     public function getColorAt($x, $y)
     {
         $pixel = $this->_imageHandler->getImagePixelColor($x, $y);
@@ -500,6 +511,7 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      * @param string $font
      * @return \Magento\Framework\Image\Adapter\AbstractAdapter
      */
+    #[\Override]
     public function createPngFromString($text, $font = '')
     {
         $image = $this->_getGmagickObject();
@@ -539,10 +551,9 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
     /**
      * Get Gmagick object
      *
-     * @param mixed $files
      * @return \Gmagick
      */
-    protected function _getGmagickObject($files = null)
+    protected function _getGmagickObject(mixed $files = null)
     {
         return new \Gmagick($files);
     }

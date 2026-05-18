@@ -50,6 +50,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
         return self::$profileData;
     }
 
+    #[\Override]
     public function open($filename)
     {
         parent::open($filename);
@@ -64,6 +65,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
      * @param null|int $frameHeight
      * @return void
      */
+    #[\Override]
     public function resize($frameWidth = null, $frameHeight = null)
     {
         $this->_checkCanProcess();
@@ -90,6 +92,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
         $this->refreshImageDimensions();
     }
 
+    #[\Override]
     protected function _applyOptions()
     {
         parent::_applyOptions();
@@ -99,7 +102,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
 
     private function getWatermarkResource($imagePath, $opacity)
     {
-        $pathinfo = pathinfo($imagePath);
+        $pathinfo = pathinfo((string) $imagePath);
         $suffix = '-tmp';
 
         if ($this->getWatermarkPosition() === self::POSITION_STRETCH) {
@@ -126,7 +129,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
 
         try {
             return self::$watermarks[$cachedFilename] = $this->_getImagickObject($cachedFilename);
-        } catch (\ImagickException $e) {
+        } catch (\ImagickException) {
             // file does not exist continue
         }
 
@@ -134,7 +137,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
         }
 
-        list($watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType) = $this->_getImageOptions($imagePath);
+        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($imagePath);
 
         $watermark = $this->_getImagickObject($imagePath);
 
@@ -178,6 +181,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
+    #[\Override]
     public function watermark($imagePath, $positionX = 0, $positionY = 0, $opacity = 30, $tile = false)
     {
         if (empty($imagePath) || !file_exists($imagePath)) {
@@ -186,7 +190,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
 
         $this->_checkCanProcess();
 
-        $origOpacity = $this->getWatermarkImageOpacity() ? $this->getWatermarkImageOpacity() : $opacity;
+        $origOpacity = $this->getWatermarkImageOpacity() ?: $opacity;
 
         $watermark = $this->getWatermarkResource($imagePath, $origOpacity);
 
@@ -264,6 +268,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException If destination path is not writable
      */
+    #[\Override]
     public function save($destination = null, $newName = null)
     {
         $fileName = $this->_prepareDestination($destination, $newName);

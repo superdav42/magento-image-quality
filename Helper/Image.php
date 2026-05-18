@@ -17,6 +17,7 @@ class Image extends \Magento\Catalog\Helper\Image
      * @param array $attributes
      * @return Image
      */
+    #[\Override]
     public function init($product, $imageId, $attributes = [])
     {
 
@@ -65,6 +66,7 @@ class Image extends \Magento\Catalog\Helper\Image
      *
      * @return false|string
      */
+    #[\Override]
     public function getFrame()
     {
         $frame = $this->getAttribute('frame');
