@@ -1,3 +1,7 @@
+Unreleased
+=============
+* Avoid passing a null compression quality to GraphicsMagick when Magento has not configured one
+
 1.0.0
 =============
 Initial Release
