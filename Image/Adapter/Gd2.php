@@ -123,9 +123,9 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
                 } else {
                     $newImage = imagecreate($this->_imageSrcWidth, $this->_imageSrcHeight);
                 }
-                $this->_fillBackgroundColor($newImage);
+                $this->fillTransparentBackground($newImage);
                 imagecopy($newImage, $this->_imageHandler, 0, 0, 0, 0, $this->_imageSrcWidth, $this->_imageSrcHeight);
-                $this->imageDestroy();
+                imagedestroy($this->_imageHandler);
                 $this->_imageHandler = $newImage;
             }
         }
@@ -364,6 +364,36 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
             $isTrueColor = true;
         }
         return false;
+    }
+
+    /**
+     * Fill a GD image with a fully transparent background.
+     *
+     * Magento's background-fill helpers are private and cannot be called by
+     * this adapter. The save path only reaches this method for an alpha PNG.
+     *
+     * @param resource|\GdImage $imageResource
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    private function fillTransparentBackground($imageResource)
+    {
+        if (!imagealphablending($imageResource, false)) {
+            throw new \InvalidArgumentException('Failed to set alpha blending for PNG image.');
+        }
+
+        $transparentColor = imagecolorallocatealpha($imageResource, 0, 0, 0, 127);
+        if ($transparentColor === false) {
+            throw new \InvalidArgumentException('Failed to allocate alpha transparency for PNG image.');
+        }
+
+        if (!imagefill($imageResource, 0, 0, $transparentColor)) {
+            throw new \InvalidArgumentException('Failed to fill PNG image with alpha transparency.');
+        }
+
+        if (!imagesavealpha($imageResource, true)) {
+            throw new \InvalidArgumentException('Failed to save alpha transparency into PNG image.');
+        }
     }
     
     /**
