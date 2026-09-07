@@ -152,7 +152,10 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
      */
     protected function _applyOptions()
     {
-        $this->_imageHandler->setCompressionQuality($this->quality());
+        $quality = $this->quality();
+        if ($quality !== null) {
+            $this->_imageHandler->setCompressionQuality($quality);
+        }
         $this->_imageHandler->setImageCompression(\Gmagick::COMPRESSION_JPEG);
         $this->_imageHandler->setImageUnits(\Gmagick::RESOLUTION_PIXELSPERINCH);
         $this->_imageHandler->setImageResolution(
