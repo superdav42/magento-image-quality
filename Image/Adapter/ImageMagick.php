@@ -102,6 +102,8 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
 
     private function getWatermarkResource($imagePath, $opacity)
     {
+        $remoteSource = WatermarkCache::isRemote($imagePath);
+        $sourcePath = WatermarkCache::resolveSource($imagePath);
         $pathinfo = pathinfo((string) $imagePath);
         $suffix = '-tmp';
 
@@ -121,7 +123,9 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             $suffix .= '-O'.$opacity;
         }
 
-        $cachedFilename = $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
+        $cachedFilename = $remoteSource
+            ? WatermarkCache::derivedPath($imagePath, $suffix)
+            : $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
 
         if (isset(self::$watermarks[$cachedFilename])) {
             return self::$watermarks[$cachedFilename];
@@ -133,13 +137,13 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             // file does not exist continue
         }
 
-        if (empty($imagePath) || !file_exists($imagePath)) {
+        if (empty($sourcePath) || !file_exists($sourcePath)) {
             throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
         }
 
-        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($imagePath);
+        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($sourcePath);
 
-        $watermark = $this->_getImagickObject($imagePath);
+        $watermark = $this->_getImagickObject($sourcePath);
 
         if ($watermarkWidth && $watermarkHeight &&
             ($watermarkWidth !== $watermarkSrcWidth ||
@@ -161,7 +165,16 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
             $watermark->evaluateImage(\Imagick::EVALUATE_MULTIPLY, round($opacity / 100, 1), \Imagick::CHANNEL_OPACITY);
         }
 
-        $watermark->writeImage($cachedFilename);
+        if ($remoteSource) {
+            WatermarkCache::writeImageAtomically(
+                $cachedFilename,
+                static function ($temporary) use ($watermark) {
+                    return $watermark->writeImage($temporary);
+                }
+            );
+        } else {
+            $watermark->writeImage($cachedFilename);
+        }
 
         self::$watermarks[$cachedFilename] = $watermark;
         return $watermark;
@@ -184,7 +197,7 @@ class ImageMagick extends \Magento\Framework\Image\Adapter\ImageMagick
     #[\Override]
     public function watermark($imagePath, $positionX = 0, $positionY = 0, $opacity = 30, $tile = false)
     {
-        if (empty($imagePath) || !file_exists($imagePath)) {
+        if (empty($imagePath) || (!WatermarkCache::isRemote($imagePath) && !file_exists($imagePath))) {
             throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
         }
 

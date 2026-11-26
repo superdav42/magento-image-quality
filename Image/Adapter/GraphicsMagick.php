@@ -267,6 +267,8 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
 
     private function getWatermarkResource($imagePath, $opacity)
     {
+        $remoteSource = WatermarkCache::isRemote($imagePath);
+        $sourcePath = WatermarkCache::resolveSource($imagePath);
         $pathinfo = pathinfo((string) $imagePath);
         $suffix = '-tmp';
         
@@ -288,7 +290,9 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
             $suffix .= '-O'.$opacity;
         }
         
-        $cachedFilename = $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
+        $cachedFilename = $remoteSource
+            ? WatermarkCache::derivedPath($imagePath, $suffix)
+            : $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
         
         if (isset(self::$watermarks[$cachedFilename])) {
             return self::$watermarks[$cachedFilename];
@@ -300,13 +304,13 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
             // continue
         }
 
-        if (empty($imagePath) || !file_exists($imagePath)) {
+        if (empty($sourcePath) || !file_exists($sourcePath)) {
             throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
         }
         
-        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($imagePath);
+        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($sourcePath);
         
-        $watermark = new \Gmagick($imagePath);
+        $watermark = new \Gmagick($sourcePath);
         
         if ($watermarkWidth && $watermarkHeight &&
             ($watermarkWidth !== $watermarkSrcWidth ||
@@ -340,7 +344,16 @@ class GraphicsMagick extends \Magento\Framework\Image\Adapter\AbstractAdapter
             $watermark->readimageblob(ob_get_clean());
         }
         
-        $watermark->writeImage($cachedFilename);
+        if ($remoteSource) {
+            WatermarkCache::writeImageAtomically(
+                $cachedFilename,
+                static function ($temporary) use ($watermark) {
+                    return $watermark->writeImage($temporary);
+                }
+            );
+        } else {
+            $watermark->writeImage($cachedFilename);
+        }
         
         self::$watermarks[$cachedFilename] = $watermark;
         return $watermark;
