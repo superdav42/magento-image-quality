@@ -152,6 +152,8 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
     
     private function getWatermarkResource($imagePath, $opacity)
     {
+        $remoteSource = WatermarkCache::isRemote($imagePath);
+        $sourcePath = WatermarkCache::resolveSource($imagePath);
         $pathinfo = pathinfo((string) $imagePath);
         $suffix = '-tmp';
         
@@ -172,7 +174,9 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
             $suffix .= '-O'.$opacity;
         }
         
-        $cachedFilename = $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
+        $cachedFilename = $remoteSource
+            ? WatermarkCache::derivedPath($imagePath, $suffix)
+            : $pathinfo['dirname'].DIRECTORY_SEPARATOR.$pathinfo['filename'].$suffix.'.png';
         
         if (isset(self::$watermarks[$cachedFilename])) {
             return self::$watermarks[$cachedFilename];
@@ -183,11 +187,15 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
             return $watermark;
         }
         
-        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($imagePath);
+        if (empty($sourcePath) || !file_exists($sourcePath)) {
+            throw new \LogicException(self::ERROR_WATERMARK_IMAGE_ABSENT);
+        }
+
+        [$watermarkSrcWidth, $watermarkSrcHeight, $watermarkFileType] = $this->_getImageOptions($sourcePath);
         
         $watermark = call_user_func(
             $this->getCallback('create', $watermarkFileType, 'Unsupported watermark image format.'),
-            $imagePath
+            $sourcePath
         );
         
         imagesavealpha($watermark, true);
@@ -229,7 +237,16 @@ class Gd2 extends \Magento\Framework\Image\Adapter\Gd2
             static::filterOpacity($watermark, $opacity);
         }
         
-        imagepng($watermark, $cachedFilename);
+        if ($remoteSource) {
+            WatermarkCache::writeImageAtomically(
+                $cachedFilename,
+                static function ($temporary) use ($watermark) {
+                    return imagepng($watermark, $temporary);
+                }
+            );
+        } else {
+            imagepng($watermark, $cachedFilename);
+        }
         
         self::$watermarks[$cachedFilename] = $watermark;
         return $watermark;
